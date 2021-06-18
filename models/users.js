@@ -1,6 +1,3 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable no-undef */
-/* eslint-disable import/no-unresolved */
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({

@@ -1,5 +1,3 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable import/no-unresolved */
 const mongoose = require('mongoose');
 
 const cardSchema = new mongoose.Schema({
