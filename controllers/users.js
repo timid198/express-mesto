@@ -55,6 +55,10 @@ module.exports = {
         res.send({ user });
       })
       .catch((err) => {
+        if (err.name === 'ValidationError') {
+          res.status(ERR_BAD_REQUEST).send({ message: 'Переданы некорректные данные в метод создания пользователя.' });
+          return;
+        }
         if (err.name === 'CastError') {
           res.status(ERR_BAD_REQUEST).send({ message: 'Переданы некорректные данные.' });
           return;
@@ -74,6 +78,10 @@ module.exports = {
         res.send({ user });
       })
       .catch((err) => {
+        if (err.name === 'ValidationError') {
+          res.status(ERR_BAD_REQUEST).send({ message: 'Переданы некорректные данные в метод создания пользователя.' });
+          return;
+        }
         if (err.name === 'CastError') {
           res.status(ERR_BAD_REQUEST).send({ message: 'Переданы некорректные данные.' });
           return;
