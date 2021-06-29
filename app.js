@@ -1,19 +1,20 @@
 const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const createError = require('http-errors');
+const cookieParser = require('cookie-parser');
+// const createError = require('http-errors');
+const { celebrate, Joi } = require('celebrate');
+const { createUser, login } = require('./controllers/users');
+const auth = require('./middlewares/auth');
 const routerUser = require('./routes/users');
 const routerCards = require('./routes/cards');
-
-// const ERR_NOT_FOUND = 404;
-// const ERR_INTERNAL_SERVER_ERROR = 500;
+const NotFoundError = require('./errors/not-found-err');
 
 const { PORT = 3000 } = process.env;
 const app = express();
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(express.json());
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
@@ -22,25 +23,35 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useUnifiedTopology: true,
 });
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '60c75d379ba3e42008afcc3b',
-  };
-
-  next();
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required(),
+    password: Joi.string().required(),
+    name: Joi.string().min(2).max(30).default('Жак-Ив Кусто'),
+    about: Joi.string().min(2).max(30).default('Исследователь'),
+    avatar: Joi.string().default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'),
+  }),
+}), createUser);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required(),
+    password: Joi.string().required(),
+  }),
+}), login);
+app.use('/users', auth, routerUser);
+app.use('/cards', auth, routerCards);
+app.use(() => {
+  throw new NotFoundError('Ресурс не найден.');
 });
-
-app.use('/users', routerUser);
-app.use('/cards', routerCards);
-app.use((req, res, next) => {
-  next(createError(404));
-});
-app.use((error, req, res, next) => {
-  res.status(error.status);
-  res.json({
-    status: error.status,
-    message: 'Ресурс не найден.',
-  });
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка.'
+        : message,
+    });
   next();
 });
 
