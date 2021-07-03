@@ -35,39 +35,50 @@ module.exports = {
   },
 
   getUserById(req, res, next) {
-    User.findById(req.user._id)
-      .then((user) => {
-        if (!user) {
-          throw new NotFoundError('Пользователь не найден.');
-        }
-        res.send({ user });
-      })
-      .catch((err) => {
-        if (err.name === 'CastError') {
-          throw new BadRequestError('Переданы некорректные данные в метод создания пользователя.');
-        }
-      })
-      .catch(next);
+    const profile = req.params.userId;
+    const authUser = req.user._id;
+    if (profile === authUser) {
+      User.findById(profile)
+        .then((user) => {
+          if (!user) {
+            throw new NotFoundError('Пользователь не найден.');
+          }
+          res.send({ user });
+        })
+        .catch((err) => {
+          if (err.name === 'CastError') {
+            throw new BadRequestError('Переданы некорректные данные в метод создания пользователя.');
+          }
+        })
+        .catch(next);
+    } else {
+      throw new BadRequestError('Вы пытаетесь посмотреть не свой профиль.');
+    }
   },
 
   updateUserProfile(req, res, next) {
     const { name, about } = req.body;
-    User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-      .then((user) => {
-        if (!user) {
-          throw new NotFoundError('Пользователь не найден.');
-        }
-        res.send({ user });
-      })
-      .catch((err) => {
-        if (err.name === 'ValidationError') {
-          throw new BadRequestError('Переданы некорректные данные в метод создания пользователя.');
-        }
-        if (err.name === 'CastError') {
-          throw new BadRequestError('Переданы некорректные данные.');
-        }
-      })
-      .catch(next);
+    if (req.body.name && req.body.about) {
+      User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
+        .then((user) => {
+          if (!user) {
+            throw new NotFoundError('Пользователь не найден.');
+          }
+          res.send({ user });
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.name === 'ValidationError') {
+            throw new BadRequestError('Переданы некорректные данные в метод создания пользователя.');
+          }
+          if (err.name === 'CastError') {
+            throw new BadRequestError('Переданы некорректные данные.');
+          }
+        })
+        .catch(next);
+    } else {
+      throw new BadRequestError('Переданы некорректные данные.');
+    }
   },
 
   updateUserAvatar(req, res, next) {

@@ -8,10 +8,10 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, 'cohort-22-web-development');
   } catch (err) {
-    throw new AuthorizedButForbiddenError('Необходима авторизация.');
+    return new AuthorizedButForbiddenError('Необходима авторизация.');
   }
 
   req.user = payload;
 
-  return next();
+  next();
 };
