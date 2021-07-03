@@ -9,7 +9,8 @@ router.get('/', getAllUsers);
 
 router.get('/:userId', celebrate({
   body: Joi.object().keys({
-    userId: Joi.string().alphanum().length(24),
+    userId: Joi.string().alphanum().length(24)
+    .error(new Error()),
   }, { abortEarly: false }).unknown(true),
 }), getUserById);
 
@@ -22,13 +23,16 @@ router.patch('/me', celebrate({
 
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(/^(https|http):\/\/(www\.)?[A-Za-z0-9-]+\.[A-Za-z0-9]{2}[A-Za-z0-9-._~:/?#[\]@!$&'()*+,;=]+#?$/),
+    avatar: Joi.string()
+    .pattern(/^(https|http):\/\/(www\.)?[A-Za-z0-9-]+\.[A-Za-z0-9]{2}[A-Za-z0-9-._~:/?#[\]@!$&'()*+,;=]+#?$/)
+    .error(new Error()),
   }, { abortEarly: false }),
 }), updateUserAvatar);
 
 router.get('/me', celebrate({
   body: Joi.object().keys({
-    userId: Joi.string().alphanum().length(24),
+    userId: Joi.string().alphanum().length(24)
+    .error(new Error()),
   }, { abortEarly: false }).unknown(true),
 }), getUserById);
 
