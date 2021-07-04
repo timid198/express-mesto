@@ -22,7 +22,7 @@ router.post('/', celebrate({
       'string.empty': 'Поле "name" должно быть заполнено',
     }),
     link: Joi.string().required()
-    .pattern(/^(https|http):\/\/(www\.)?[A-Za-z0-9-]+\.[A-Za-z0-9]{2}[A-Za-z0-9-._~:/?#[\]@!$&'()*+,;=]+/)
+    .pattern(/^(https|http):\/\/(www\.)?[A-Za-z0-9-]*\.[A-Za-z0-9]{2}[A-Za-z0-9-._~:\/?#[\]@!$&'()*+,;=]*#?$/)
     .messages({
       'string.pattern.base': 'Поле "link" должно быть ссылкой.',
     }),

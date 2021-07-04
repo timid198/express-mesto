@@ -1,7 +1,6 @@
 const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi, errors, isCelebrateError } = require('celebrate');
 const { createUser, login } = require('./controllers/users');
@@ -44,7 +43,7 @@ app.post('/signup', celebrate({
       'string.max': 'Максимальная длина поля "about" - 200',
       'string.empty': 'Поле "about" должно быть заполнено',
     }),
-    avatar: Joi.string().pattern(/^(https|http):\/\/(www\.)?[A-Za-z0-9-]+\.[A-Za-z0-9]{2}[A-Za-z0-9-._~:/?#[\]@!$&'()*+,;=]+#?$/)
+    avatar: Joi.string().pattern(/^(https|http):\/\/(www\.)?[A-Za-z0-9-]*\.[A-Za-z0-9]{2}[A-Za-z0-9-._~:\/?#[\]@!$&'()*+,;=]*#?$/)
     .messages({
       'string.pattern.base': 'Поле "avatar" должно быть ссылкой.',
     }),
