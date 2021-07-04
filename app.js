@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const validator = require('validator');
 const cookieParser = require('cookie-parser');
 const {  celebrate, Joi, errors, isCelebrateError, CelebrateError } = require('celebrate');
 const { createUser, login } = require('./controllers/users');
@@ -27,11 +28,28 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required(),
-    password: Joi.string().required(),
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(200),
-    avatar: Joi.string(),
+    email: Joi.string().required().pattern(/\w+@\w+\.\w+/).messages({
+      'string.pattern': 'В поле "email" нужно ввести электронную почту',
+      'string.empty': 'Поле "email" должно быть заполнено',
+    }),
+    password: Joi.string().required().min(8).messages({
+      'string.min': 'Минимальная длина поля "password" - 8',
+      'string.empty': 'Поле "password" должно быть заполнено',
+    }),
+    name: Joi.string().min(2).max(30).messages({
+      'string.min': 'Минимальная длина поля "name" - 2',
+      'string.max': 'Максимальная длина поля "name" - 30',
+      'string.empty': 'Поле "name" должно быть заполнено',
+    }),
+    about: Joi.string().min(2).max(200).messages({
+      'string.min': 'Минимальная длина поля "about" - 2',
+      'string.max': 'Максимальная длина поля "about" - 200',
+      'string.empty': 'Поле "about" должно быть заполнено',
+    }),
+    avatar: Joi.string().pattern(/^(https|http):\/\/(www\.)?[A-Za-z0-9-]+\.[A-Za-z0-9]{2}[A-Za-z0-9-._~:/?#[\]@!$&'()*+,;=]+#?$/)
+    .messages({
+      'string.pattern.base': 'Поле "avatar" должно быть ссылкой.',
+    }),
   }, { abortEarly: false }),
 }), createUser);
 app.post('/signin', celebrate({
@@ -43,19 +61,16 @@ app.post('/signin', celebrate({
 app.use(auth);
 app.use('/users', routerUser);
 app.use('/cards', routerCards);
-app.use(errors());
+app.use((err, req, res, next) => {
+  if (isCelebrateError(err)) {
+    throw new BadRequestError(err.details.get('body').message);
+  }
+  next(err);
+ })
 app.use((req, res, next) => {
   next(new NotFoundError('Ресурс не найден.'));
 });
 app.use((err, req, res, next) => {
-  if (err.code === 'ERR_ASSERTION'){
-    return res
-              .status(400)
-              .send({
-                status: 400,
-                message: 'Вы ввели некорректные данные.',        
-              });
-  };
   const { statusCode = 500, message } = err;
   res
      .status(statusCode)

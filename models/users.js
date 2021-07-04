@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const validator = require('validator');
 
 const UnauthorizedError = require('../errors/unauthorized-err');
 
@@ -8,6 +9,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    minlength: 8,
+    validate:{
+      validator: validator.isEmail,
+      message: '{VALUE} не верный адрес электронной почты.',
+    }
   },
   password: {
     type: String,
