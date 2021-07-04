@@ -29,7 +29,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().pattern(/\w+@\w+\.\w+/).messages({
-      'string.pattern': 'В поле "email" нужно ввести электронную почту',
+      'string.pattern.base': 'В поле "email" нужно ввести электронную почту',
       'string.empty': 'Поле "email" должно быть заполнено',
     }),
     password: Joi.string().required().min(8).messages({
@@ -71,6 +71,7 @@ app.use((req, res, next) => {
   next(new NotFoundError('Ресурс не найден.'));
 });
 app.use((err, req, res, next) => {
+  console.log(err);
   const { statusCode = 500, message } = err;
   res
      .status(statusCode)
