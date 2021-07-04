@@ -36,6 +36,11 @@ module.exports = {
         }
         throw new AuthorizedButForbiddenError('Вы пытаетесь изменить не свои данные.');
       })
+      .catch((err) => {
+        if (err.name === 'CastError') {
+          throw new BadRequestError('Такой карточки не существует.');
+        }
+      })
       .catch(next);
   },
 
