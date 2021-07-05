@@ -29,18 +29,13 @@ module.exports = {
     Card.findById(req.params.cardId)
       .then((card) => {
         if (!card) {
-          throw new NotFoundError('Карточка не найдена.');
+          throw new BadRequestError('Карточка не найдена.');
         }
         if (`${req.user._id}` === `${card.owner._id}`) {
           Card.deleteOne(cardId);
         }
         throw new AuthorizedButForbiddenError('Вы пытаетесь изменить не свои данные.');
-      })
-      .catch((err) => {
-        if (err.name === 'CastError') {
-          throw new BadRequestError('Такой карточки не существует.');
-        }
-      })
+      })      
       .catch(next);
   },
 
@@ -51,16 +46,12 @@ module.exports = {
       { new: true },
     )
       .then((card) => {
-        console.log(card);
         if (!card) {
-          throw new NotFoundError('Карточка не найдена.');
+          throw new BadRequestError('Карточка не найдена.');
         }
         res.send({ card });
       })
       .catch((err) => {
-        if (err.statusCode === 404) {
-          throw err;
-        }
         if (err.name === 'CastError') {
           throw new BadRequestError('Переданы некорректные данные.');
         }
@@ -76,14 +67,11 @@ module.exports = {
     )
       .then((card) => {
         if (!card) {
-          throw new NotFoundError('Карточка не найдена.');
+          throw new BadRequestError('Карточка не найдена.');
         }
         res.send({ card });
       })
       .catch((err) => {
-        if (err.statusCode === 404) {
-          throw err;
-        }
         if (err.name === 'CastError') {
           throw new BadRequestError('Переданы некорректные данные.');
         }

@@ -41,7 +41,7 @@ module.exports = {
       User.findById(profile)
         .then((user) => {
           if (!user) {
-            throw new NotFoundError('Пользователь не найден.');
+            throw new BadRequestError('Пользователь не найден.');
           }
           res.send({ user });
         })
@@ -52,7 +52,7 @@ module.exports = {
         })
         .catch(next);
     } else {
-      throw new NotFoundError('Пользователь не найден.');
+      throw new BadRequestError('Пользователь не найден.');
     }
   },
 
@@ -67,7 +67,6 @@ module.exports = {
           res.send({ user });
         })
         .catch((err) => {
-          console.log(err);
           if (err.name === 'ValidationError') {
             throw new BadRequestError('Переданы некорректные данные в метод создания пользователя.');
           }
