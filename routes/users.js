@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { celebrate, Joi, celebrated } = require('celebrate');
+const { celebrate, Joi } = require('celebrate');
 const {
   getAllUsers, getUserById, updateUserProfile, updateUserAvatar,
 } = require('../controllers/users');
@@ -31,10 +31,10 @@ router.patch('/me', celebrate({
 
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(/^(https|http):\/\/(www\.)?[A-Za-z0-9-]*\.[A-Za-z0-9]{2}[A-Za-z0-9-._~:\/?#[\]@!$&'()*+,;=]*#?$/)
-    .messages({
-      'string.pattern.base': 'Поле "avatar" должно быть ссылкой.',
-    }),
+    avatar: Joi.string().pattern(/^(https|http):\/\/(www\.)?[A-Za-z0-9-]*\.[A-Za-z0-9]{2}[A-Za-z0-9-._~:\\/?#[\]@!$&'()*+,;=]*#?$/)
+      .messages({
+        'string.pattern.base': 'Поле "avatar" должно быть ссылкой.',
+      }),
   }),
 }), updateUserAvatar);
 

@@ -16,16 +16,17 @@ router.delete('/:cardId', celebrate({
 
 router.post('/', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30).messages({
-      'string.min': 'Минимальная длина поля "name" - 2',
-      'string.max': 'Максимальная длина поля "name" - 30',
-      'string.empty': 'Поле "name" должно быть заполнено',
-    }),
+    name: Joi.string().required().min(2).max(30)
+      .messages({
+        'string.min': 'Минимальная длина поля "name" - 2',
+        'string.max': 'Максимальная длина поля "name" - 30',
+        'string.empty': 'Поле "name" должно быть заполнено',
+      }),
     link: Joi.string().required()
-    .pattern(/^(https|http):\/\/(www\.)?[A-Za-z0-9-]*\.[A-Za-z0-9]{2}[A-Za-z0-9-._~:\/?#[\]@!$&'()*+,;=]*#?$/)
-    .messages({
-      'string.pattern.base': 'Поле "link" должно быть ссылкой.',
-    }),
+      .pattern(/^(https|http):\/\/(www\.)?[A-Za-z0-9-]*\.[A-Za-z0-9]{2}[A-Za-z0-9-._~:\\/?#[\]@!$&'()*+,;=]*#?$/)
+      .messages({
+        'string.pattern.base': 'Поле "link" должно быть ссылкой.',
+      }),
   }, { abortEarly: false }),
 }), createCard);
 

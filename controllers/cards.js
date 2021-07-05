@@ -1,7 +1,6 @@
 const Card = require('../models/cards');
 const BadRequestError = require('../errors/bad-request-err');
 const AuthorizedButForbiddenError = require('../errors/authorized-but-forbidden-err');
-const NotFoundError = require('../errors/not-found-err');
 
 module.exports = {
   createCard(req, res, next) {
@@ -32,10 +31,10 @@ module.exports = {
           throw new BadRequestError('Карточка не найдена.');
         }
         if (`${req.user._id}` === `${card.owner._id}`) {
-          Card.deleteOne(cardId);
+          Card.deleteOne(card._id);
         }
         throw new AuthorizedButForbiddenError('Вы пытаетесь изменить не свои данные.');
-      })      
+      })
       .catch(next);
   },
 

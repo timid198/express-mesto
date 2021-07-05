@@ -2,7 +2,9 @@ const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-const { celebrate, Joi, errors, isCelebrateError } = require('celebrate');
+const {
+  celebrate, Joi, isCelebrateError,
+} = require('celebrate');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const routerUser = require('./routes/users');
@@ -43,10 +45,10 @@ app.post('/signup', celebrate({
       'string.max': 'Максимальная длина поля "about" - 200',
       'string.empty': 'Поле "about" должно быть заполнено',
     }),
-    avatar: Joi.string().pattern(/^(https|http):\/\/(www\.)?[A-Za-z0-9-]*\.[A-Za-z0-9]{2}[A-Za-z0-9-._~:\/?#[\]@!$&'()*+,;=]*#?$/)
-    .messages({
-      'string.pattern.base': 'Поле "avatar" должно быть ссылкой.',
-    }),
+    avatar: Joi.string().pattern(/^(https|http):\/\/(www\.)?[A-Za-z0-9-]*\.[A-Za-z0-9]{2}[A-Za-z0-9-._~:\\/?#[\]@!$&'()*+,;=]*#?$/)
+      .messages({
+        'string.pattern.base': 'Поле "avatar" должно быть ссылкой.',
+      }),
   }, { abortEarly: false }),
 }), createUser);
 app.post('/signin', celebrate({
@@ -72,16 +74,16 @@ app.use((err, req, res, next) => {
     throw new BadRequestError(err.details.get('body').message);
   }
   next(err);
- })
+});
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res
-     .status(statusCode)
-     .send({
-       message: statusCode === 500
-         ? 'На сервере произошла ошибка.'
-         : message,          
-     });
+    .status(statusCode)
+    .send({
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка.'
+        : message,
+    });
   next();
 });
 
