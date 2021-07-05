@@ -25,15 +25,20 @@ module.exports = {
   },
 
   deleteCardById(req, res, next) {
+    const cardIdentificator = req.params.cardId;
     Card.findById(req.params.cardId)
       .then((card) => {
+        console.log(cardIdentificator);
         if (!card) {
           throw new BadRequestError('Карточка не найдена.');
         }
+        console.log(card._id);
         if (`${req.user._id}` === `${card.owner._id}`) {
-          Card.deleteOne(card._id);
+          console.log(card._id);
+          Card.findByIdAndRemove(cardIdentificator)
+          .then((data) => res.send(data));
         }
-        throw new AuthorizedButForbiddenError('Вы пытаетесь изменить не свои данные.');
+        return new AuthorizedButForbiddenError('Вы пытаетесь изменить не свои данные.');
       })
       .catch(next);
   },
