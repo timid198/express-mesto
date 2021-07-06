@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/users');
 
 const BadRequestError = require('../errors/bad-request-err');
+const AuthorizedButForbiddenError = require('../errors/authorized-but-forbidden-err');
 const UnauthorizedError = require('../errors/unauthorized-err');
 const NotFoundError = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-err');
@@ -37,23 +38,25 @@ module.exports = {
   getUserById(req, res, next) {
     const profile = req.params.userId;
     const authUser = req.user._id;
-    if (profile === authUser) {
-      User.findById(profile)
-        .then((user) => {
-          if (!user) {
-            throw new BadRequestError('Пользователь не найден.');
-          }
+    User.findById(profile)
+      .then((user) => {
+        if (!user) {
+          throw new NotFoundError('Пользователь не найден.');
+        }
+        if (`${user._id}` === `${authUser}`) {
           res.send({ user });
-        })
-        .catch((err) => {
-          if (err.name === 'CastError') {
-            throw new BadRequestError('Переданы некорректные данные в метод создания пользователя.');
-          }
-        })
-        .catch(next);
-    } else {
-      throw new BadRequestError('Пользователь не найден.');
-    }
+        }
+        throw new AuthorizedButForbiddenError('Вы не авторизованы.');
+      })
+      .catch((err) => {
+        if (err.statusCode === 404 || err.statusCode === 403) {
+          throw err;
+        }
+        if (err.name === 'CastError') {
+          throw new BadRequestError('Переданы некорректные данные в метод создания пользователя.');
+        }
+      })
+      .catch(next);
   },
 
   updateUserProfile(req, res, next) {

@@ -8,8 +8,8 @@ router.get('/', getAllUsers);
 
 router.get('/:userId', celebrate({
   body: Joi.object().keys({
-    userId: Joi.string().alphanum().length(24).messages({
-      'string.length': 'Не соответствует _id. Количество символов должно равняться: 24.',
+    userId: Joi.string().pattern(/^[a-f\d]{24}$/i).messages({
+      'string.pattern.base': 'Не соответствует _id. Количество символов должно равняться - 24, содержать строчные латинские буквы и цифры.',
     }),
   }, { abortEarly: false }).unknown(true),
 }), getUserById);
@@ -40,8 +40,8 @@ router.patch('/me/avatar', celebrate({
 
 router.get('/me', celebrate({
   body: Joi.object().keys({
-    userId: Joi.string().alphanum().length(24).messages({
-      'string.length': 'Не соответствует _id. Количество символов должно равняться: 24.',
+    userId: Joi.string().pattern(/^[a-f\d]{24}$/i).messages({
+      'string.pattern.base': 'Не соответствует _id. Количество символов должно равняться - 24, содержать строчные латинские буквы и цифры.',
     }),
   }, { abortEarly: false }).unknown(true),
 }), getUserById);

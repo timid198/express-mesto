@@ -71,13 +71,11 @@ app.use((req, res, next) => {
 });
 app.use((err, req, res, next) => {
   if (isCelebrateError(err)) {
-    console.log(err);
     throw new BadRequestError(err.details.get('body').message);
   }
   next(err);
 });
 app.use((err, req, res, next) => {
-  console.log(err);
   const { statusCode = 500, message } = err;
   res
     .status(statusCode)

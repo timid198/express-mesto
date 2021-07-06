@@ -8,8 +8,8 @@ router.get('/', getAllCards);
 
 router.delete('/:cardId', celebrate({
   body: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24).messages({
-      'string.length': 'Не соответствует _id. Количество символов должно равняться: 24.',
+    cardId: Joi.string().pattern(/^[a-f\d]{24}$/i).messages({
+      'string.pattern.base': 'Не соответствует _id. Количество символов должно равняться - 24, содержать строчные латинские буквы и цифры.',
     }),
   }, { abortEarly: false }).unknown(true),
 }), deleteCardById);
@@ -29,21 +29,21 @@ router.post('/', celebrate({
         'any.required': 'Поле "link" должно быть заполнено',
         'string.pattern.base': 'Поле "link" должно быть ссылкой.',
       }),
-  }),
+  }, { abortEarly: false }),
 }), createCard);
 
 router.put('/:cardId/likes', celebrate({
   body: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24).messages({
-      'string.length': 'Не соответствует _id. Количество символов должно равняться: 24.',
+    cardId: Joi.string().pattern(/^[a-f\d]{24}$/i).messages({
+      'string.pattern.base': 'Не соответствует _id. Количество символов должно равняться - 24, содержать строчные латинские буквы и цифры.',
     }),
   }, { abortEarly: false }).unknown(true),
 }), likeCard);
 
 router.delete('/:cardId/likes', celebrate({
   body: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24).messages({
-      'string.length': 'Не соответствует _id. Количество символов должно равняться: 24.',
+    cardId: Joi.string().pattern(/^[a-f\d]{24}$/i).messages({
+      'string.pattern.base': 'Не соответствует _id. Количество символов должно равняться - 24, содержать строчные латинские буквы и цифры.',
     }),
   }, { abortEarly: false }).unknown(true),
 }), dislikeCard);

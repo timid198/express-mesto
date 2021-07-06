@@ -1,6 +1,7 @@
 const Card = require('../models/cards');
 const BadRequestError = require('../errors/bad-request-err');
 const AuthorizedButForbiddenError = require('../errors/authorized-but-forbidden-err');
+const NotFoundError = require('../errors/not-found-err');
 
 module.exports = {
   createCard(req, res, next) {
@@ -28,17 +29,22 @@ module.exports = {
     const cardIdentificator = req.params.cardId;
     Card.findById(req.params.cardId)
       .then((card) => {
-        console.log(cardIdentificator);
         if (!card) {
-          throw new BadRequestError('Карточка не найдена.');
+          throw new NotFoundError('Карточка не найдена.');
         }
-        console.log(card._id);
         if (`${req.user._id}` === `${card.owner._id}`) {
-          console.log(card._id);
           Card.findByIdAndRemove(cardIdentificator)
-          .then((data) => res.send(data));
+            .then((data) => res.send(data));
         }
         return new AuthorizedButForbiddenError('Вы пытаетесь изменить не свои данные.');
+      })
+      .catch((err) => {
+        if (err.statusCode === 404) {
+          throw err;
+        }
+        if (err.name === 'CastError') {
+          throw new BadRequestError('Переданы некорректные данные.');
+        }
       })
       .catch(next);
   },

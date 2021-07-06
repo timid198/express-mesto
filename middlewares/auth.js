@@ -1,9 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-// eslint-disable-next-line consistent-return
 module.exports = (req, res, next) => {
   const token = req.cookies.jwt;
-  console.log(token);
   if (!token) {
     return res
       .status(401)
@@ -22,4 +20,5 @@ module.exports = (req, res, next) => {
   req.user = payload;
 
   next();
+  return true;
 };
