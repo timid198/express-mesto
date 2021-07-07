@@ -57,11 +57,14 @@ module.exports = {
     )
       .then((card) => {
         if (!card) {
-          throw new BadRequestError('Карточка не найдена.');
+          throw new NotFoundError('Карточка не найдена.');
         }
         res.send({ card });
       })
       .catch((err) => {
+        if (err.statusCode === 404) {
+          throw err;
+        }
         if (err.name === 'CastError') {
           throw new BadRequestError('Переданы некорректные данные.');
         }
@@ -77,11 +80,14 @@ module.exports = {
     )
       .then((card) => {
         if (!card) {
-          throw new BadRequestError('Карточка не найдена.');
+          throw new NotFoundError('Карточка не найдена.');
         }
         res.send({ card });
       })
       .catch((err) => {
+        if (err.statusCode === 404) {
+          throw err;
+        }
         if (err.name === 'CastError') {
           throw new BadRequestError('Переданы некорректные данные.');
         }
