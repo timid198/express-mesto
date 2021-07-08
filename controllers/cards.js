@@ -36,10 +36,10 @@ module.exports = {
           Card.findByIdAndRemove(cardIdentificator)
             .then((data) => res.send(data));
         }
-        return new AuthorizedButForbiddenError('Вы пытаетесь изменить не свои данные.');
+        throw new AuthorizedButForbiddenError('Вы пытаетесь изменить не свои данные.');
       })
       .catch((err) => {
-        if (err.statusCode === 404) {
+        if (err.statusCode === 404 || err.statusCode === 403) {
           throw err;
         }
         if (err.name === 'CastError') {
